@@ -73,11 +73,19 @@ class Board{
     private:
         int x, y;
         Square *square[8][8];
+        int square_length;
 
     public:
         Board(int x, int y){
 //            this->w = new WSquare(x,y);
 //            this->b = new BSquare(x,y);
+
+        }
+
+        Board(int square_length){
+
+            this->square_length = square_length;
+
         }
 
         Board(){};
@@ -88,9 +96,9 @@ class Board{
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
                     if(counterX%2 == 0)
-                        square[x][y] = new Square(posX * 100, posY * 100, 50, WHITE);
+                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, WHITE);
                     else if(counterX%2 == 1)
-                        square[x][y] = new Square(posX * 100, posY * 100, 50, RED);
+                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, RED);
 
                     square[x][y]->draw();
                     counterX++;
@@ -106,12 +114,21 @@ class Board{
 
 int main(){
 
-    initwindow(1920, 1080, "Space Invader");
-    Board *b = new Board();
+    //if you're running on a smaller resolution monitor,
+    //change to 1366 x 768
+    static const int X_RES = 1920;
+    static const int Y_RES = 1080;
+
+    initwindow(X_RES, Y_RES, "Space Invader");
+
+    static const int BOARD_SIZE = getmaxx()/50;
+
+
+    Board *b = new Board(BOARD_SIZE);
     b->draw();
 
-    Pawn *p = new Pawn(100, 100, 50, LIGHTBLUE);
-    p->draw();
+   // Pawn *p = new Pawn(100, 100, 50, LIGHTBLUE);
+   // p->draw();
   //  Square *s = new Square(200,200,200,WHITE);
    // s->draw();
     while(!kbhit()){
