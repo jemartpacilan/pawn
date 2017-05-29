@@ -153,7 +153,7 @@ int main(){
    // fillellipse(1);
         if(clicking){
 
-            p = new Pawn(mousex(), mousey(), BOARD_SIZE, LIGHTBLUE);
+            p->translate(mousex(),mousey());
 
         }
 
