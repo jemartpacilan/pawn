@@ -49,6 +49,12 @@ public:
         setfillstyle(1, color);
         fillpoly(3, t);
     }
+    void translateTri(int x, int y){
+			this->xmin += x;
+			this->xmax += x;
+			this->ymin += y;
+			this->ymax += y;
+		}
 };
 /*class Rect{
 private:
@@ -101,6 +107,13 @@ public:
         setfillstyle(1, color);
         fillpoly(4, r);
     }
+
+    void translateRect(int x, int y){
+			this->xmin += x;
+			this->xmax += x;
+			this->ymin += y;
+			this->ymax += y;
+		}
 };
 
 class Pawn{
@@ -123,17 +136,10 @@ public:
     void draw(){
         t1->draw();
         t2->draw();
-     //  setcolor(LIGHTBLUE);
-  //      arc(x,y-(half_length*0.3), 90, 270,half_length*0.40);
-    //    line(x,y-((half_length*0.80)),x,y+(half_length*0.3));
 
-      //  floodfill(x,y-(half_length*0.4),color);
 
         fillellipse(x,y-(half_length*0.3),half_length*0.40,half_length*0.40);
 
-        /*for(int i =  0; i < 20; i++){
-            arc(x,y-(half_length*0.3), 90, 270,(half_length*0.40) - i);
-        }*/
         setcolor(BLUE);
         setfillstyle(1, BLUE);
         pieslice(x,y-(half_length*0.3), 90, 270,(half_length*0.40));
@@ -152,5 +158,18 @@ public:
 
     int getY(){
         return y;
+    }
+
+    void translate(int h, int v){
+
+        h -= x;
+        v -= y;
+
+        t1->translateTri(h,v);
+        t2->translateTri(h,v);
+        r1->translateRect(h,v);
+        r2->translateRect(h,v);
+        x+=h;
+        y+=v;
     }
 };

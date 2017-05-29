@@ -126,7 +126,57 @@ int main(){
 
     Board *b = new Board(BOARD_SIZE);
     b->draw();
+    int x, y;
+    Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, LIGHTBLUE);
+    p->draw();
 
+    bool clicking = false;
+
+    int page = 0;
+    while(true){
+
+        setactivepage(page);
+        setvisualpage(1 - page);
+
+        b->draw();
+        p->draw();
+
+        if(ismouseclick(WM_LBUTTONUP)){
+
+            if(checkCollision(p->getX(), p->getY(),mousex(), mousey(), BOARD_SIZE)){
+                clicking = true;
+            }
+
+
+        }
+
+   // fillellipse(1);
+        if(clicking){
+
+            p = new Pawn(mousex(), mousey(), BOARD_SIZE, LIGHTBLUE);
+
+        }
+
+        page = 1 - page;
+        delay(24);
+
+    }
+
+//    while (!ismouseclick(WM_LBUTTONDOWN))
+  //      getmouseclick(WM_LBUTTONDOWN, x, y);
+/*
+    while(!ismouseclick(WM_LBUTTONUP)){
+        p->draw();
+        delay(100);
+        if(ismouseclick(WM_MOUSEMOVE)){
+            getmouseclick(WM_MOUSEMOVE, x, y);
+            cleardevice();
+            b->draw();
+            p->translate(x,y);
+            p->draw();
+            delay(100);
+        }
+    }*/
    // Pawn *p = new Pawn(100, 100, 50, LIGHTBLUE);
    // p->draw();
   //  Square *s = new Square(200,200,200,WHITE);
