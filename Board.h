@@ -1,30 +1,5 @@
 #include <graphics.h>
 #include <iostream>
-#include "Pawn.h"
-#include "Player.h"
-
-using namespace std;
-
-//This method accepts the origin of the mouse x1, y1
-//and the origin of the square x2, y2
-//var field indicates the space that the enemy inhabits:
-//x-f, y-f   x+f,y-f|
-//                  |
-//      x,y         |
-//                  |
-//x-f, y+f   x+f,y-f|
-//This method returns true if x1,y1 is inside the 'field'
-bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
-
-    if(x1 > x2 - half_length && x1 < x2 + half_length){
-        if(y1 > y2 - half_length && y1 < y2 + half_length){
-            return true;
-        }
-    }
-
-    return false;
-}
-
 class Square{
     private:
         int x, y, half_length, color;
@@ -50,8 +25,18 @@ class Square{
             };
 
             if(toggled){
-                setcolor(LIGHTGREEN);
-                setfillstyle(1, LIGHTGREEN);
+
+                if(color == COLOR(222,184,135)){
+                    setcolor(COLOR(0,200,0));
+                    setfillstyle(1, COLOR(0,200,0));
+                }
+
+                else if(color == COLOR(139,69,19)){
+                    setcolor(COLOR(0,150,0));
+                    setfillstyle(1, COLOR(0,150,0));
+                }
+
+
             }
             else{
                 setcolor(color);
@@ -81,42 +66,27 @@ class Square{
             return y;
         }
 };
-
 class Board{
     private:
         int x, y;
         int square_length;
 
-        //int currX, currY;
-
     public:
         Square *square[8][8];
         int stat_table[8][8];
 
-        Board(int x, int y){
-
-        }
-
         Board(int square_length){
-
             this->square_length = square_length;
-          //  currX = 0;
-           // currY = 0;
         }
 
         Board(){};
-
-      /*  void init(){
-
-
-        }*/
 
         void init(){
             int counterX = 0;
             int counterY = 0;
 
-            for(int y = 0, posY = 1; y < 8; y++, posY++){
-                for(int x = 0, posX = 1; x < 8; x++, posX++){
+            for(int y = 0, posY = 2; y < 8; y++, posY++){
+                for(int x = 0, posX = 6; x < 8; x++, posX++){
                     if(counterX%2 == 0)
                         square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(222,184,135));
                     else if(counterX%2 == 1)
@@ -187,6 +157,10 @@ class Board{
                     }
                 }
             }
+        }
+
+        void win(int player){
+
         }
 
         void checkMoves(int player, int x, int y){
@@ -344,187 +318,3 @@ class Board{
 
         }
 };
-
-
-int main(){
-
-    //if you're running on a smaller resolution monitor,
-    //change to 1366 x 768
-    static const int X_RES = 1920;
-    static const int Y_RES = 1080;
-
-    initwindow(X_RES, Y_RES, "Pawn Wars");
-
-    static const int BOARD_SIZE = getmaxx()/50;
-
-    Board *b = new Board(BOARD_SIZE);
-
-    Player1 *p1 = new Player1();
-    Player2 *p2 = new Player2();
-
-    b->init();
-    b->draw();
-
-    int x, y;
-
-    bool clicking = false;
-
-    p1->init(b->square[0][6]->getX(), b->square[0][6]->getY(), BOARD_SIZE);
-    p2->init(b->square[0][1]->getX(), b->square[0][1]->getY(), BOARD_SIZE);
-
-    p1->move();
-
-    int page = 0;
-    while(true){
-
-        setactivepage(page);
-        setvisualpage(1 - page);
-        cleardevice();
-
-        b->draw();
-        p1->draw();
-        p2->draw();
-
-        if(p1->isMoving()){
-
-            int clickedPawn;
-
-            if(!clicking){
-                if(ismouseclick(WM_LBUTTONDOWN)){
-
-                    for(int i = 0; i < 8; i++){
-
-                        int currX = b->findX(p1->p[i]->getid());
-                        int currY = b->findY(p1->p[i]->getid());
-
-                        if(checkCollision(mousex(), mousey(), p1->p[i]->getX(), p1->p[i]->getY(), BOARD_SIZE) && b->canMove(1, currX, currY)){
-                            clickedPawn = i;
-                            clicking = true;
-
-
-                            b->findReset(p1->p[i]->getid());
-
-                            b->checkMoves(1, currX, currY);
-                            if (!p1->p[clickedPawn]->alive){
-                                clicking = false;
-                            }
-                        }
-
-                        clearmouseclick(WM_LBUTTONDOWN);
-                    }
-
-                }
-
-            }
-
-            if(clicking){
-
-                p1->p[clickedPawn]->translate(mousex(),mousey());
-                if(ismouseclick(WM_LBUTTONDOWN)){
-                    for(int y = 0; y < 8; y++){
-                        for(int x = 0; x < 8; x++){
-                            if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
-                                if(b->square[x][y]->isToggled()){
-                                    p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
-                                    clicking = false;
-
-
-                                    if(b->stat_table[x][y] < 0 ){
-                                        cout<<"here"<<endl;
-                                        p2->p[(b->stat_table[x][y] * -1) - 1]->translate(800 + (b->stat_table[x][y] * -1) * 30, 400);
-                                        p2->p[(b->stat_table[x][y] * -1) - 1]->Die();
-                                    }
-
-                                    b->stat_table[x][y] = p1->p[clickedPawn]->getid();
-                                    b->print();
-
-                                    b->resetToggle();
-
-                                    p1->stop();
-                                    p2->move();
-                                }
-
-
-                            }
-                        }
-                    }
-                }
-
-                clearmouseclick(WM_LBUTTONDOWN);
-
-
-                }
-
-        }
-        else if(p2->isMoving()){
-            int clickedPawn;
-
-            if(!clicking){
-                if(ismouseclick(WM_LBUTTONDOWN)){
-
-                    for(int i = 0; i < 8; i++){
-
-                        int currX = b->findX(p2->p[i]->getid());
-                        int currY = b->findY(p2->p[i]->getid());
-
-                        if(checkCollision(mousex(), mousey(), p2->p[i]->getX(), p2->p[i]->getY(), BOARD_SIZE) && b->canMove(2, currX, currY)){
-                            clickedPawn = i;
-                            clicking = true;
-                            b->findReset(p2->p[i]->getid());
-
-                            b->checkMoves(2, currX, currY);
-                            if (!p2->p[clickedPawn]->alive){
-                                clicking = false;
-                            }
-                        }
-
-                        clearmouseclick(WM_LBUTTONDOWN);
-                    }
-                }
-            }
-
-            if(clicking){
-                if(p2->p[clickedPawn]->alive == true){
-                    p2->p[clickedPawn]->translate(mousex(),mousey());
-                    if(ismouseclick(WM_LBUTTONDOWN)){
-                        for(int y = 0; y < 8; y++){
-                            for(int x = 0; x < 8; x++){
-                                if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
-                                    if(b->square[x][y]->isToggled()){
-                                        p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
-                                        clicking = false;
-
-                                        if(b->stat_table[x][y] > 0 ){
-                                            cout<<"here"<<endl;
-                                            p1->p[(b->stat_table[x][y]) - 1]->translate(800 + (b->stat_table[x][y]) * 30, 200);
-                                            p1->p[(b->stat_table[x][y]) - 1]->Die();
-                                        }
-
-                                        b->stat_table[x][y] = p2->p[clickedPawn]->getid();
-                                        b->print();
-
-                                        b->resetToggle();
-
-                                        p2->stop();
-                                        p1->move();
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    clearmouseclick(WM_LBUTTONDOWN);
-                }
-            }
-        }
-
-        page = 1 - page;
-        delay(24);
-
-    }
-
-    while(!kbhit()){
-        delay(200);
-    }
-    return 0;
-}
