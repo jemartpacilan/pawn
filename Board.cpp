@@ -83,6 +83,8 @@ class Board{
         int x, y;
         int square_length;
 
+        int currX, currY;
+
     public:
         Square *square[8][8];
         int stat_table[8][8];
@@ -154,10 +156,49 @@ class Board{
 
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
-                    if(stat_table[x][y] == id)
+                    if(stat_table[x][y] == id){
+                        currX = x;
+                        currY = y;
+
                         stat_table[x][y] = 0;
+                    }
                 }
             }
+        }
+
+        void checkMoves(int player){
+
+            if(player == 1){
+                //white perspective
+                if(stat_table[currX - 1][ currY - 1] < 0){
+                    //can move here;
+
+                    square[x][y]->toggle();
+
+                }
+
+                if(stat_table[currX + 1][ currY + 1] < 0){
+                    //can move here;
+
+                    square[x][y]->toggle();
+                }
+
+                if(stat_table[currX][ currY - 1] == 0){
+                    //can move here;
+
+                    square[x][y]->toggle();
+                }
+
+                if(currY == 6){
+                    if(stat_table[currX][ currY - 2] == 0){
+                        //can move here;
+
+                        square[x][y]->toggle();
+                    }
+                }
+            }
+
+
 
         }
 
