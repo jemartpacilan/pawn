@@ -225,12 +225,17 @@ int main(){
                             clickedPawn = i;
                             clicking = true;
 
+
                             b->findReset(p1->p[i]->getid());
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
                     }
+//                    if (p1->p[clickedPawn]->alive == false){
+//                        clicking = false;
+//                    }
                 }
+
             }
 
             if(clicking){
@@ -247,6 +252,11 @@ int main(){
                                 b->print();
                                 p1->stop();
                                 p2->move();
+                                if(b->stat_table[x][y] != 0){
+                                    p2->p[clickedPawn]->translate(mousex() + mousex(),mousey());
+                                    p2->p[clickedPawn]->alive == false;
+                                }
+
                             }
                         }
                     }
@@ -255,7 +265,8 @@ int main(){
                 clearmouseclick(WM_LBUTTONDOWN);
 
 
-            }
+                }
+
         }
         else if(p2->isMoving()){
             int clickedPawn;
@@ -268,8 +279,10 @@ int main(){
                             cout<<"P1 Clicked"<<endl;
                             clickedPawn = i;
                             clicking = true;
-
                             b->findReset(p2->p[i]->getid());
+//                            if (p2->p[clickedPawn]->alive == false){
+//                                clicking = false;
+//                            }
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -278,7 +291,7 @@ int main(){
             }
 
             if(clicking){
-
+                if(p2->p[clickedPawn]->alive == true){
                 p2->p[clickedPawn]->translate(mousex(),mousey());
                 if(ismouseclick(WM_LBUTTONDOWN)){
                     for(int y = 0; y < 8; y++){
@@ -292,6 +305,10 @@ int main(){
 
                                 p2->stop();
                                 p1->move();
+                                if(b->stat_table[x][y] != 0){
+                                    p1->p[clickedPawn]->translate(mousex() + mousex(),mousey());
+                                    p1->p[clickedPawn]->alive == false;
+                                }
                             }
                         }
                     }
@@ -300,6 +317,7 @@ int main(){
                 clearmouseclick(WM_LBUTTONDOWN);
 
 
+            }
             }
         }
 

@@ -122,7 +122,9 @@ private:
     Rect *r2, *r1;
     Triangle *t1,*t2;
     int id;
+
 public:
+    bool alive;
     Pawn(int x, int y, int half_length, int color, int id){
         this->x = x;
         this->y = y;
@@ -138,6 +140,7 @@ public:
         this->t2 = new Triangle(x,y - (half_length * 0.2),x + (half_length * 0.6),y + (half_length * 0.9),color);
 
         this->id = id;
+        alive = true;
     }
 
     void draw(){
@@ -182,5 +185,9 @@ public:
         r2->translateRect(h,v);
         x+=h;
         y+=v;
+    }
+
+    bool isAlive(){
+        return alive;
     }
 };
