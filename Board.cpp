@@ -96,7 +96,8 @@ class Board{
         Board(int square_length){
 
             this->square_length = square_length;
-
+            currX = 0;
+            currY = 0;
         }
 
         Board(){};
@@ -118,7 +119,6 @@ class Board{
                         square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(139,69,19));
 
                     stat_table[x][y] = 0;
-                   // square[x][y]->draw();
                     counterX++;
                 }
                 counterY++;
@@ -157,6 +157,7 @@ class Board{
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
                     if(stat_table[x][y] == id){
+
                         currX = x;
                         currY = y;
 
@@ -170,36 +171,83 @@ class Board{
 
             if(player == 1){
                 //white perspective
-                if(stat_table[currX - 1][ currY - 1] < 0){
-                    //can move here;
+                if(currX > 0){
+                    if(stat_table[currX - 1][ currY - 1] < 0){
+                        //can move here;
 
-                    square[x][y]->toggle();
+                        square[currX - 1][currY -1]->toggle();
 
+                    }
                 }
 
-                if(stat_table[currX + 1][ currY + 1] < 0){
-                    //can move here;
+                if(currX < 7){
+                    if(stat_table[currX + 1][ currY - 1] < 0){
+                        //can move here;
 
-                    square[x][y]->toggle();
+                        square[currX + 1][ currY - 1]->toggle();
+                    }
                 }
 
                 if(stat_table[currX][ currY - 1] == 0){
                     //can move here;
 
-                    square[x][y]->toggle();
+                    square[currX][ currY - 1]->toggle();
                 }
 
                 if(currY == 6){
                     if(stat_table[currX][ currY - 2] == 0){
                         //can move here;
 
-                        square[x][y]->toggle();
+                        square[currX][currY - 2]->toggle();
+                    }
+                }
+            }
+
+            if(player == 2){
+                //black perspective
+                if(currX > 0){
+                    if(stat_table[currX - 1][currY + 1] > 0){
+                        //can move here;
+
+                        square[currX - 1][currY + 1]->toggle();
+
+                    }
+                }
+
+                if(currX < 7){
+                    if(stat_table[currX + 1][currY + 1] > 0){
+                        //can move here;
+
+                        square[currX + 1][currY + 1]->toggle();
+                    }
+                }
+
+                if(stat_table[currX][currY + 1] == 0){
+                    //can move here;
+
+                    square[currX][currY + 1]->toggle();
+                }
+
+                if(currY == 1){
+                    if(stat_table[currX][currY + 2] == 0){
+                        //can move here;
+
+                        square[currX][currY + 2]->toggle();
                     }
                 }
             }
 
 
 
+
+        }
+
+        void resetToggle(){
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    square[x][y]->untoggle();
+                }
+            }
         }
 
         void draw(){
@@ -267,6 +315,8 @@ int main(){
                             clicking = true;
 
                             b->findReset(p1->p[i]->getid());
+
+                            b->checkMoves(1);
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -286,6 +336,10 @@ int main(){
 
                                 b->stat_table[x][y] = p1->p[clickedPawn]->getid();
                                 b->print();
+
+                                b->resetToggle();
+
+
                                 p1->stop();
                                 p2->move();
                             }
@@ -311,6 +365,8 @@ int main(){
                             clicking = true;
 
                             b->findReset(p2->p[i]->getid());
+
+                            b->checkMoves(2);
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -330,6 +386,8 @@ int main(){
 
                                 b->stat_table[x][y] = p2->p[clickedPawn]->getid();
                                 b->print();
+
+                                b->resetToggle();
 
                                 p2->stop();
                                 p1->move();
