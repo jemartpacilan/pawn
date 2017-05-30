@@ -1,5 +1,7 @@
 #include <graphics.h>
 #include "Pawn.h"
+#include "Player.h"
+
 using namespace std;
 
 //This method accepts the origin of the mouse x1, y1
@@ -58,24 +60,6 @@ class Square{
             return y;
         }
 };
-/*
-class Board{
-    private:
-        int x, y;
-        WSquare *w;
-        BSquare *b;
-
-    public:
-        Board(){
-            this->w = new WSquare(x,y);
-            this->b = new BSquare(x,y);
-        }
-
-        void draw(){
-           // line(100,50,100,450);
-           // line(100,50,500,50);
-        }
-}*/
 
 class Board{
     private:
@@ -86,8 +70,6 @@ class Board{
         Square *square[8][8];
 
         Board(int x, int y){
-//            this->w = new WSquare(x,y);
-//            this->b = new BSquare(x,y);
 
         }
 
@@ -121,6 +103,7 @@ class Board{
         }
 };
 
+
 int main(){
 
     //if you're running on a smaller resolution monitor,
@@ -132,14 +115,21 @@ int main(){
 
     static const int BOARD_SIZE = getmaxx()/50;
 
-
     Board *b = new Board(BOARD_SIZE);
+
+    Player1 *p1 = new Player1();
+    Player2 *p2 = new Player2();
+
     b->draw();
     int x, y;
-    Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, WHITE);
-    p->draw();
+
+   // Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, WHITE);
+  //  p->draw();
 
     bool clicking = false;
+
+    p1->init(b->square[0][6]->getX(), b->square[0][6]->getY(), BOARD_SIZE);
+    p2->init(b->square[0][1]->getX(), b->square[0][1]->getY(), BOARD_SIZE);
 
     int page = 0;
     while(true){
@@ -149,8 +139,10 @@ int main(){
         cleardevice();
 
         b->draw();
-        p->draw();
-
+        //p->draw();
+        p1->draw();
+        p2->draw();
+        /*
         if(!clicking){
             if(ismouseclick(WM_LBUTTONDOWN)){
 
@@ -168,10 +160,6 @@ int main(){
 
             p->translate(mousex(),mousey());
             if(ismouseclick(WM_LBUTTONDOWN)){
-                /*if(checkCollision(mousex(), mousey(), mousex(), mousey(), BOARD_SIZE)){
-                    clicking = false;
-                }
-                clicking = false;*/
                 for(int y = 0; y < 8; y++){
                     for(int x = 0; x < 8; x++){
                         if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
@@ -185,7 +173,7 @@ int main(){
             clearmouseclick(WM_LBUTTONDOWN);
 
 
-        }
+        } */
 
         page = 1 - page;
         delay(24);

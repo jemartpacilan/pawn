@@ -129,7 +129,7 @@ public:
         this->color = color;
         if(color == WHITE)
             this->shadow_color = LIGHTGRAY;
-        if(color == DARKGRAY)
+        if(color == COLOR(50,50,50))
             this->shadow_color = BLACK;
         this->r1 = new Rect(x - (half_length * 0.35), y, x + (half_length * 0.35), y + (half_length * 0.1), color);
         this->r2 = new Rect(x - (half_length * 0.65), y + (half_length * 0.7), x + (half_length * 0.65), y + (half_length * 0.9), color);
