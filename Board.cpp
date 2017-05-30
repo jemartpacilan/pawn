@@ -69,6 +69,10 @@ class Square{
             toggled = false;
         }
 
+        bool isToggled(){
+            return toggled;
+        }
+
         int getX(){
             return x;
         }
@@ -83,7 +87,7 @@ class Board{
         int x, y;
         int square_length;
 
-        int currX, currY;
+        //int currX, currY;
 
     public:
         Square *square[8][8];
@@ -96,8 +100,8 @@ class Board{
         Board(int square_length){
 
             this->square_length = square_length;
-            currX = 0;
-            currY = 0;
+          //  currX = 0;
+           // currY = 0;
         }
 
         Board(){};
@@ -152,22 +156,42 @@ class Board{
             }
         }
 
+        int findX(int id){
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    if(stat_table[x][y] == id){
+                        //currX = x;
+                        return x;
+                    }
+                }
+            }
+        }
+
+        int findY(int id){
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    if(stat_table[x][y] == id){
+                        //currY = y;
+                        return y;
+                    }
+                }
+            }
+        }
+
         void findReset(int id){
 
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
                     if(stat_table[x][y] == id){
-
-                        currX = x;
-                        currY = y;
-
                         stat_table[x][y] = 0;
                     }
                 }
             }
         }
 
-        void checkMoves(int player){
+        void checkMoves(int player, int x, int y){
+            int currX = x;
+            int currY = y;
 
             if(player == 1){
                 //white perspective
@@ -194,8 +218,8 @@ class Board{
                     square[currX][ currY - 1]->toggle();
                 }
 
-                if(currY == 6){
-                    if(stat_table[currX][ currY - 2] == 0){
+                if(currY == 6 && stat_table[currX][currY - 1] == 0){
+                    if(stat_table[currX][currY - 2] == 0){
                         //can move here;
 
                         square[currX][currY - 2]->toggle();
@@ -228,7 +252,7 @@ class Board{
                     square[currX][currY + 1]->toggle();
                 }
 
-                if(currY == 1){
+                if(currY == 1 && stat_table[currX][currY + 1] == 0){
                     if(stat_table[currX][currY + 2] == 0){
                         //can move here;
 
@@ -239,6 +263,66 @@ class Board{
 
 
 
+
+        }
+
+        bool canMove(int player, int x, int y){
+            int currX = x;
+            int currY = y;
+            if(player == 1){
+                //white perspective
+                if(currX > 0){
+                    if(stat_table[currX - 1][ currY - 1] < 0){
+
+                       return true;
+
+                    }
+                }
+
+                if(currX < 7){
+                    if(stat_table[currX + 1][ currY - 1] < 0){
+
+                        return true;
+                    }
+                }
+
+                if(stat_table[currX][ currY - 1] == 0){
+                    return true;
+                }
+
+                if(currY == 6 && stat_table[currX][currY - 1] == 0){
+                    if(stat_table[currX][currY - 2] == 0){
+                        return true;
+                    }
+                }
+            }
+
+            if(player == 2){
+                //black perspective
+                if(currX > 0){
+                    if(stat_table[currX - 1][currY + 1] > 0){
+                        return true;
+                    }
+                }
+
+                if(currX < 7){
+                    if(stat_table[currX + 1][currY + 1] > 0){
+                        return true;
+                    }
+                }
+
+                if(stat_table[currX][currY + 1] == 0){
+                    return true;
+                }
+
+                if(currY == 1 && stat_table[currX][currY + 1] == 0){
+                    if(stat_table[currX][currY + 2] == 0){
+                        return true;
+                    }
+                }
+            }
+
+            return false;
 
         }
 
@@ -309,19 +393,28 @@ int main(){
                 if(ismouseclick(WM_LBUTTONDOWN)){
 
                     for(int i = 0; i < 8; i++){
-                        if(checkCollision(mousex(), mousey(), p1->p[i]->getX(), p1->p[i]->getY(), BOARD_SIZE)){
-                            cout<<"P1 Clicked"<<endl;
+
+                        int currX = b->findX(p1->p[i]->getid());
+                        int currY = b->findY(p1->p[i]->getid());
+
+                        if(checkCollision(mousex(), mousey(), p1->p[i]->getX(), p1->p[i]->getY(), BOARD_SIZE) && b->canMove(1, currX, currY)){
                             clickedPawn = i;
                             clicking = true;
 
+
                             b->findReset(p1->p[i]->getid());
 
-                            b->checkMoves(1);
+                            b->checkMoves(1, currX, currY);
+                            if (!p1->p[clickedPawn]->alive){
+                                clicking = false;
+                            }
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
                     }
+
                 }
+
             }
 
             if(clicking){
@@ -331,17 +424,27 @@ int main(){
                     for(int y = 0; y < 8; y++){
                         for(int x = 0; x < 8; x++){
                             if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
-                                p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
-                                clicking = false;
-
-                                b->stat_table[x][y] = p1->p[clickedPawn]->getid();
-                                b->print();
-
-                                b->resetToggle();
+                                if(b->square[x][y]->isToggled()){
+                                    p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
+                                    clicking = false;
 
 
-                                p1->stop();
-                                p2->move();
+                                    if(b->stat_table[x][y] < 0 ){
+                                        cout<<"here"<<endl;
+                                        p2->p[(b->stat_table[x][y] * -1) - 1]->translate(800 + (b->stat_table[x][y] * -1) * 30, 400);
+                                        p2->p[(b->stat_table[x][y] * -1) - 1]->Die();
+                                    }
+
+                                    b->stat_table[x][y] = p1->p[clickedPawn]->getid();
+                                    b->print();
+
+                                    b->resetToggle();
+
+                                    p1->stop();
+                                    p2->move();
+                                }
+
+
                             }
                         }
                     }
@@ -350,7 +453,8 @@ int main(){
                 clearmouseclick(WM_LBUTTONDOWN);
 
 
-            }
+                }
+
         }
         else if(p2->isMoving()){
             int clickedPawn;
@@ -359,14 +463,19 @@ int main(){
                 if(ismouseclick(WM_LBUTTONDOWN)){
 
                     for(int i = 0; i < 8; i++){
-                        if(checkCollision(mousex(), mousey(), p2->p[i]->getX(), p2->p[i]->getY(), BOARD_SIZE)){
-                            cout<<"P1 Clicked"<<endl;
+
+                        int currX = b->findX(p2->p[i]->getid());
+                        int currY = b->findY(p2->p[i]->getid());
+
+                        if(checkCollision(mousex(), mousey(), p2->p[i]->getX(), p2->p[i]->getY(), BOARD_SIZE) && b->canMove(2, currX, currY)){
                             clickedPawn = i;
                             clicking = true;
-
                             b->findReset(p2->p[i]->getid());
 
-                            b->checkMoves(2);
+                            b->checkMoves(2, currX, currY);
+                            if (!p2->p[clickedPawn]->alive){
+                                clicking = false;
+                            }
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -375,30 +484,37 @@ int main(){
             }
 
             if(clicking){
+                if(p2->p[clickedPawn]->alive == true){
+                    p2->p[clickedPawn]->translate(mousex(),mousey());
+                    if(ismouseclick(WM_LBUTTONDOWN)){
+                        for(int y = 0; y < 8; y++){
+                            for(int x = 0; x < 8; x++){
+                                if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
+                                    if(b->square[x][y]->isToggled()){
+                                        p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
+                                        clicking = false;
 
-                p2->p[clickedPawn]->translate(mousex(),mousey());
-                if(ismouseclick(WM_LBUTTONDOWN)){
-                    for(int y = 0; y < 8; y++){
-                        for(int x = 0; x < 8; x++){
-                            if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
-                                p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
-                                clicking = false;
+                                        if(b->stat_table[x][y] > 0 ){
+                                            cout<<"here"<<endl;
+                                            p1->p[(b->stat_table[x][y]) - 1]->translate(800 + (b->stat_table[x][y]) * 30, 200);
+                                            p1->p[(b->stat_table[x][y]) - 1]->Die();
+                                        }
 
-                                b->stat_table[x][y] = p2->p[clickedPawn]->getid();
-                                b->print();
+                                        b->stat_table[x][y] = p2->p[clickedPawn]->getid();
+                                        b->print();
 
-                                b->resetToggle();
+                                        b->resetToggle();
 
-                                p2->stop();
-                                p1->move();
+                                        p2->stop();
+                                        p1->move();
+                                    }
+                                }
                             }
                         }
                     }
+
+                    clearmouseclick(WM_LBUTTONDOWN);
                 }
-
-                clearmouseclick(WM_LBUTTONDOWN);
-
-
             }
         }
 
