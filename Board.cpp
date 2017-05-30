@@ -1,4 +1,5 @@
 #include <graphics.h>
+#include <iostream>
 #include "Pawn.h"
 #include "Player.h"
 
@@ -15,7 +16,6 @@ using namespace std;
 //This method returns true if x1,y1 is inside the 'field'
 bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 
-   // int field = 70;
     if(x1 > x2 - half_length && x1 < x2 + half_length){
         if(y1 > y2 - half_length && y1 < y2 + half_length){
             return true;
@@ -131,6 +131,8 @@ int main(){
     p1->init(b->square[0][6]->getX(), b->square[0][6]->getY(), BOARD_SIZE);
     p2->init(b->square[0][1]->getX(), b->square[0][1]->getY(), BOARD_SIZE);
 
+    p1->move();
+
     int page = 0;
     while(true){
 
@@ -142,6 +144,89 @@ int main(){
         //p->draw();
         p1->draw();
         p2->draw();
+
+        if(p1->isMoving()){
+
+            int clickedPawn;
+
+            if(!clicking){
+                if(ismouseclick(WM_LBUTTONDOWN)){
+
+                    for(int i = 0; i < 8; i++){
+                        if(checkCollision(mousex(), mousey(), p1->p[i]->getX(), p1->p[i]->getY(), BOARD_SIZE)){
+                            cout<<"P1 Clicked"<<endl;
+                            clickedPawn = i;
+                            clicking = true;
+                        }
+
+                        clearmouseclick(WM_LBUTTONDOWN);
+                    }
+                }
+            }
+
+            if(clicking){
+
+                p1->p[clickedPawn]->translate(mousex(),mousey());
+                if(ismouseclick(WM_LBUTTONDOWN)){
+                    for(int y = 0; y < 8; y++){
+                        for(int x = 0; x < 8; x++){
+                            if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
+                                p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
+                                clicking = false;
+
+                                p1->stop();
+                                p2->move();
+                            }
+                        }
+                    }
+                }
+
+                clearmouseclick(WM_LBUTTONDOWN);
+
+
+            }
+        }
+        else if(p2->isMoving()){
+            int clickedPawn;
+
+            if(!clicking){
+                if(ismouseclick(WM_LBUTTONDOWN)){
+
+                    for(int i = 0; i < 8; i++){
+                        if(checkCollision(mousex(), mousey(), p2->p[i]->getX(), p2->p[i]->getY(), BOARD_SIZE)){
+                            cout<<"P1 Clicked"<<endl;
+                            clickedPawn = i;
+                            clicking = true;
+                        }
+
+                        clearmouseclick(WM_LBUTTONDOWN);
+                    }
+                }
+            }
+
+            if(clicking){
+
+                p2->p[clickedPawn]->translate(mousex(),mousey());
+                if(ismouseclick(WM_LBUTTONDOWN)){
+                    for(int y = 0; y < 8; y++){
+                        for(int x = 0; x < 8; x++){
+                            if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
+                                p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
+                                clicking = false;
+
+                                p2->stop();
+                                p1->move();
+                            }
+                        }
+                    }
+                }
+
+                clearmouseclick(WM_LBUTTONDOWN);
+
+
+            }
+        }
+
         /*
         if(!clicking){
             if(ismouseclick(WM_LBUTTONDOWN)){

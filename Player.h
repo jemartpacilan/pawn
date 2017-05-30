@@ -1,9 +1,14 @@
 
 class Player{
     private:
-    public:
 
-        Player(){};
+    public:
+        bool isActive;
+        Player(){
+
+            isActive = false;
+
+        };
 
         Pawn *p[8];
 
@@ -11,6 +16,18 @@ class Player{
             for(int i = 0; i < 8; i++){
                 p[i]->draw();
             }
+        }
+
+        void move(){
+            isActive = true;
+        }
+
+        void stop(){
+            isActive = false;
+        }
+
+        bool isMoving(){
+            return isActive;
         }
 };
 
