@@ -56,13 +56,11 @@ class Board{
         int x, y;
         WSquare *w;
         BSquare *b;
-
     public:
         Board(){
             this->w = new WSquare(x,y);
             this->b = new BSquare(x,y);
         }
-
         void draw(){
            // line(100,50,100,450);
            // line(100,50,500,50);
