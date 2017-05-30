@@ -104,7 +104,7 @@ bool game(){
 
                                     if(b->stat_table[x][y] < 0 ){
                                         cout<<"here"<<endl;
-                                        p2->p[(b->stat_table[x][y] * -1) - 1]->translate(100 + (b->stat_table[x][y] * -1) * 30, 800);
+                                        p2->p[(b->stat_table[x][y] * -1) - 1]->translate(100 + (b->stat_table[x][y] * -1) * 30, (b->getFirstPosY() * 4) + (BOARD_SIZE *2));
                                         p2->p[(b->stat_table[x][y] * -1) - 1]->Die();
                                     }
 
@@ -176,8 +176,9 @@ bool game(){
 
                                         if(b->stat_table[x][y] > 0 ){
                                             cout<<"here"<<endl;
-                                            p1->p[(b->stat_table[x][y]) - 1]->translate(100 + (b->stat_table[x][y]) * 30, 300);
+                                            p1->p[(b->stat_table[x][y]) - 1]->translate(100 + (b->stat_table[x][y]) * 30, b->getFirstPosY());
                                             p1->p[(b->stat_table[x][y]) - 1]->Die();
+                                            cout<<"posY:"<<b->getFirstPosY();
                                         }
 
 
@@ -220,8 +221,8 @@ int main(){
 
     //if you're running on a smaller resolution monitor,
     //change to 1366 x 768
-    static const int X_RES = 1920;
-    static const int Y_RES = 1080;
+    static const int X_RES = 1366;
+    static const int Y_RES = 768;
 
     initwindow(X_RES, Y_RES, "Pawn Wars");
 
