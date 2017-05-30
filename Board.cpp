@@ -28,6 +28,7 @@ bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 class Square{
     private:
         int x, y, half_length, color;
+        bool toggled;
     public:
         Square(){};
         Square(int x, int y, int half_length, int color){
@@ -35,6 +36,7 @@ class Square{
             this->y = y;
             this->half_length = half_length;
             this->color = color;
+            this->toggled = false;
         }
 
         void draw(){
@@ -47,9 +49,24 @@ class Square{
 
             };
 
-            setcolor(color);
-            setfillstyle(1, color);
+            if(toggled){
+                setcolor(LIGHTGREEN);
+                setfillstyle(1, LIGHTGREEN);
+            }
+            else{
+                setcolor(color);
+                setfillstyle(1, color);
+            }
+
             fillpoly(4, sqr);
+        }
+
+        void toggle(){
+            toggled = true;
+        }
+
+        void untoggle(){
+            toggled = false;
         }
 
         int getX(){
@@ -68,6 +85,7 @@ class Board{
 
     public:
         Square *square[8][8];
+        int stat_table[8][8];
 
         Board(int x, int y){
 
@@ -81,9 +99,15 @@ class Board{
 
         Board(){};
 
-        void draw(){
+      /*  void init(){
+
+
+        }*/
+
+        void init(){
             int counterX = 0;
             int counterY = 0;
+
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
                     if(counterX%2 == 0)
@@ -91,7 +115,8 @@ class Board{
                     else if(counterX%2 == 1)
                         square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(139,69,19));
 
-                    square[x][y]->draw();
+                    stat_table[x][y] = 0;
+                   // square[x][y]->draw();
                     counterX++;
                 }
                 counterY++;
@@ -100,6 +125,50 @@ class Board{
                 else
                     counterX = 1;
             }
+
+            initPawn();
+
+
+        }
+
+        void print(){
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    cout<<"\t"<<stat_table[x][y];
+                }
+
+                cout<<endl;
+            }
+
+        }
+
+        void initPawn(){
+            for(int x = 0, y1 = 6, y2 = 1; x < 8; x++ ){
+
+                stat_table[x][y1] = x + 1;
+                stat_table[x][y2] = -x - 1;
+            }
+        }
+
+        void findReset(int id){
+
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    if(stat_table[x][y] == id)
+                        stat_table[x][y] = 0;
+                }
+            }
+
+        }
+
+        void draw(){
+
+            for(int y = 0, posY = 1; y < 8; y++, posY++){
+                for(int x = 0, posX = 1; x < 8; x++, posX++){
+                    square[x][y]->draw();
+                }
+            }
+
         }
 };
 
@@ -111,7 +180,7 @@ int main(){
     static const int X_RES = 1920;
     static const int Y_RES = 1080;
 
-    initwindow(X_RES, Y_RES, "Space Invader");
+    initwindow(X_RES, Y_RES, "Pawn Wars");
 
     static const int BOARD_SIZE = getmaxx()/50;
 
@@ -120,11 +189,10 @@ int main(){
     Player1 *p1 = new Player1();
     Player2 *p2 = new Player2();
 
+    b->init();
     b->draw();
-    int x, y;
 
-   // Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, WHITE);
-  //  p->draw();
+    int x, y;
 
     bool clicking = false;
 
@@ -141,7 +209,6 @@ int main(){
         cleardevice();
 
         b->draw();
-        //p->draw();
         p1->draw();
         p2->draw();
 
@@ -157,6 +224,8 @@ int main(){
                             cout<<"P1 Clicked"<<endl;
                             clickedPawn = i;
                             clicking = true;
+
+                            b->findReset(p1->p[i]->getid());
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -174,6 +243,8 @@ int main(){
                                 p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
                                 clicking = false;
 
+                                b->stat_table[x][y] = p1->p[clickedPawn]->getid();
+                                b->print();
                                 p1->stop();
                                 p2->move();
                             }
@@ -197,6 +268,8 @@ int main(){
                             cout<<"P1 Clicked"<<endl;
                             clickedPawn = i;
                             clicking = true;
+
+                            b->findReset(p2->p[i]->getid());
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -214,6 +287,9 @@ int main(){
                                 p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
                                 clicking = false;
 
+                                b->stat_table[x][y] = p2->p[clickedPawn]->getid();
+                                b->print();
+
                                 p2->stop();
                                 p1->move();
                             }
@@ -227,63 +303,11 @@ int main(){
             }
         }
 
-        /*
-        if(!clicking){
-            if(ismouseclick(WM_LBUTTONDOWN)){
-
-                if(checkCollision(mousex(), mousey(), p->getX(), p->getY(), BOARD_SIZE)){
-                    clicking = true;
-                }
-
-                clearmouseclick(WM_LBUTTONDOWN);
-
-
-            }
-        }
-
-        if(clicking){
-
-            p->translate(mousex(),mousey());
-            if(ismouseclick(WM_LBUTTONDOWN)){
-                for(int y = 0; y < 8; y++){
-                    for(int x = 0; x < 8; x++){
-                        if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
-                            p->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
-                            clicking = false;
-                        }
-                    }
-                }
-            }
-
-            clearmouseclick(WM_LBUTTONDOWN);
-
-
-        } */
-
         page = 1 - page;
         delay(24);
 
     }
 
-//    while (!ismouseclick(WM_LBUTTONDOWN))
-  //      getmouseclick(WM_LBUTTONDOWN, x, y);
-/*
-    while(!ismouseclick(WM_LBUTTONUP)){
-        p->draw();
-        delay(100);
-        if(ismouseclick(WM_MOUSEMOVE)){
-            getmouseclick(WM_MOUSEMOVE, x, y);
-            cleardevice();
-            b->draw();
-            p->translate(x,y);
-            p->draw();
-            delay(100);
-        }
-    }*/
-   // Pawn *p = new Pawn(100, 100, 50, LIGHTBLUE);
-   // p->draw();
-  //  Square *s = new Square(200,200,200,WHITE);
-   // s->draw();
     while(!kbhit()){
         delay(200);
     }

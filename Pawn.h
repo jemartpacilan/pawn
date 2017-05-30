@@ -121,8 +121,9 @@ private:
     int x, y, half_length, r, color, shadow_color;
     Rect *r2, *r1;
     Triangle *t1,*t2;
+    int id;
 public:
-    Pawn(int x, int y, int half_length, int color){
+    Pawn(int x, int y, int half_length, int color, int id){
         this->x = x;
         this->y = y;
         this->half_length = half_length;
@@ -135,6 +136,8 @@ public:
         this->r2 = new Rect(x - (half_length * 0.65), y + (half_length * 0.7), x + (half_length * 0.65), y + (half_length * 0.9), color);
         this->t1 = new Triangle(x,y - (half_length * 0.2),x - (half_length * 0.6),y + (half_length * 0.9),shadow_color);
         this->t2 = new Triangle(x,y - (half_length * 0.2),x + (half_length * 0.6),y + (half_length * 0.9),color);
+
+        this->id = id;
     }
 
     void draw(){
@@ -162,6 +165,10 @@ public:
 
     int getY(){
         return y;
+    }
+
+    int getid(){
+        return id;
     }
 
     void translate(int h, int v){
