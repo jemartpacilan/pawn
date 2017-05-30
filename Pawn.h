@@ -187,6 +187,14 @@ public:
         y+=v;
     }
 
+        void Alive(){
+            alive = true;
+        }
+
+        void Die(){
+            alive = false;
+        }
+
     bool isAlive(){
         return alive;
     }

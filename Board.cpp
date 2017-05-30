@@ -227,13 +227,15 @@ int main(){
 
 
                             b->findReset(p1->p[i]->getid());
+
+                            if (!p1->p[clickedPawn]->alive){
+                                clicking = false;
+                            }
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
                     }
-//                    if (p1->p[clickedPawn]->alive == false){
-//                        clicking = false;
-//                    }
+
                 }
 
             }
@@ -248,14 +250,19 @@ int main(){
                                 p1->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
                                 clicking = false;
 
+
+                                if(b->stat_table[x][y] < 0 ){
+                                    cout<<"here"<<endl;
+                                    p2->p[(b->stat_table[x][y] * -1) - 1]->translate(mousex() + mousex(),mousey());
+                                    p2->p[(b->stat_table[x][y] * -1) - 1]->Die();
+                                }
+
                                 b->stat_table[x][y] = p1->p[clickedPawn]->getid();
                                 b->print();
+
                                 p1->stop();
                                 p2->move();
-                                if(b->stat_table[x][y] != 0){
-                                    p2->p[clickedPawn]->translate(mousex() + mousex(),mousey());
-                                    p2->p[clickedPawn]->alive == false;
-                                }
+
 
                             }
                         }
@@ -280,9 +287,9 @@ int main(){
                             clickedPawn = i;
                             clicking = true;
                             b->findReset(p2->p[i]->getid());
-//                            if (p2->p[clickedPawn]->alive == false){
-//                                clicking = false;
-//                            }
+                            if (!p2->p[clickedPawn]->alive){
+                                clicking = false;
+                            }
                         }
 
                         clearmouseclick(WM_LBUTTONDOWN);
@@ -300,15 +307,18 @@ int main(){
                                 p2->p[clickedPawn]->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
                                 clicking = false;
 
+                                if(b->stat_table[x][y] > 0 ){
+                                    cout<<"here"<<endl;
+                                    p1->p[(b->stat_table[x][y]) - 1]->translate(mousex() + mousex(),mousey());
+                                    p1->p[(b->stat_table[x][y]) - 1]->Die();
+                                }
+
                                 b->stat_table[x][y] = p2->p[clickedPawn]->getid();
                                 b->print();
 
                                 p2->stop();
                                 p1->move();
-                                if(b->stat_table[x][y] != 0){
-                                    p1->p[clickedPawn]->translate(mousex() + mousex(),mousey());
-                                    p1->p[clickedPawn]->alive == false;
-                                }
+
                             }
                         }
                     }
