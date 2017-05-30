@@ -49,6 +49,14 @@ class Square{
             setfillstyle(1, color);
             fillpoly(4, sqr);
         }
+
+        int getX(){
+            return x;
+        }
+
+        int getY(){
+            return y;
+        }
 };
 /*
 class Board{
@@ -72,10 +80,11 @@ class Board{
 class Board{
     private:
         int x, y;
-        Square *square[8][8];
         int square_length;
 
     public:
+        Square *square[8][8];
+
         Board(int x, int y){
 //            this->w = new WSquare(x,y);
 //            this->b = new BSquare(x,y);
@@ -96,9 +105,9 @@ class Board{
             for(int y = 0, posY = 1; y < 8; y++, posY++){
                 for(int x = 0, posX = 1; x < 8; x++, posX++){
                     if(counterX%2 == 0)
-                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, WHITE);
+                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(222,184,135));
                     else if(counterX%2 == 1)
-                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, RED);
+                        square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(139,69,19));
 
                     square[x][y]->draw();
                     counterX++;
@@ -127,7 +136,7 @@ int main(){
     Board *b = new Board(BOARD_SIZE);
     b->draw();
     int x, y;
-    Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, LIGHTBLUE);
+    Pawn *p = new Pawn(BOARD_SIZE*2, BOARD_SIZE*2, BOARD_SIZE, WHITE);
     p->draw();
 
     bool clicking = false;
@@ -137,23 +146,44 @@ int main(){
 
         setactivepage(page);
         setvisualpage(1 - page);
+        cleardevice();
 
         b->draw();
         p->draw();
 
-        if(ismouseclick(WM_LBUTTONUP)){
+        if(!clicking){
+            if(ismouseclick(WM_LBUTTONDOWN)){
 
-            if(checkCollision(p->getX(), p->getY(),mousex(), mousey(), BOARD_SIZE)){
-                clicking = true;
+                if(checkCollision(mousex(), mousey(), p->getX(), p->getY(), BOARD_SIZE)){
+                    clicking = true;
+                }
+
+                clearmouseclick(WM_LBUTTONDOWN);
+
+
             }
-
-
         }
 
-   // fillellipse(1);
         if(clicking){
 
             p->translate(mousex(),mousey());
+            if(ismouseclick(WM_LBUTTONDOWN)){
+                /*if(checkCollision(mousex(), mousey(), mousex(), mousey(), BOARD_SIZE)){
+                    clicking = false;
+                }
+                clicking = false;*/
+                for(int y = 0; y < 8; y++){
+                    for(int x = 0; x < 8; x++){
+                        if(checkCollision(b->square[x][y]->getX(), b->square[x][y]->getY(), mousex(), mousey(), BOARD_SIZE)){
+                            p->translate(b->square[x][y]->getX(),b->square[x][y]->getY());
+                            clicking = false;
+                        }
+                    }
+                }
+            }
+
+            clearmouseclick(WM_LBUTTONDOWN);
+
 
         }
 

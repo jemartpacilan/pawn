@@ -118,7 +118,7 @@ public:
 
 class Pawn{
 private:
-    int x, y, half_length, r, color;
+    int x, y, half_length, r, color, shadow_color;
     Rect *r2, *r1;
     Triangle *t1,*t2;
 public:
@@ -127,9 +127,13 @@ public:
         this->y = y;
         this->half_length = half_length;
         this->color = color;
+        if(color == WHITE)
+            this->shadow_color = LIGHTGRAY;
+        if(color == DARKGRAY)
+            this->shadow_color = BLACK;
         this->r1 = new Rect(x - (half_length * 0.35), y, x + (half_length * 0.35), y + (half_length * 0.1), color);
         this->r2 = new Rect(x - (half_length * 0.65), y + (half_length * 0.7), x + (half_length * 0.65), y + (half_length * 0.9), color);
-        this->t1 = new Triangle(x,y - (half_length * 0.2),x - (half_length * 0.6),y + (half_length * 0.9),BLUE);
+        this->t1 = new Triangle(x,y - (half_length * 0.2),x - (half_length * 0.6),y + (half_length * 0.9),shadow_color);
         this->t2 = new Triangle(x,y - (half_length * 0.2),x + (half_length * 0.6),y + (half_length * 0.9),color);
     }
 
@@ -140,12 +144,12 @@ public:
 
         fillellipse(x,y-(half_length*0.3),half_length*0.40,half_length*0.40);
 
-        setcolor(BLUE);
-        setfillstyle(1, BLUE);
+        setcolor(shadow_color);
+        setfillstyle(1, shadow_color);
         pieslice(x,y-(half_length*0.3), 90, 270,(half_length*0.40));
 
 
-        floodfill(x - (half_length*0.30),y-(half_length*0.3),BLUE);
+        floodfill(x - (half_length*0.30),y-(half_length*0.3),shadow_color);
         r1->draw();
         r2->draw();
 
