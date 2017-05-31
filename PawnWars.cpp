@@ -3,30 +3,67 @@
 #include "Pawn.h"
 #include "Player.h"
 #include "Board.h"
-
+#include <time.h>
+#include <String.h>
 using namespace std;
+////////////////////////////////////////////////////////////////////////////////////////
+/*function declaration*/
+void welcome_splashscreen();
+bool checkCollision(int x1, int y1, int x2, int y2, int half_length);
+bool game();
+void win_splashscreen();
+////////////////////////////////////////////////////////////////////////////////////////
+int main(){
 
+    //if you're running on a smaller resolution monitor,
+    //change to 1366 x 768
+    static const int X_RES = 1366;
+    static const int Y_RES = 768;
 
-bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
-//This method accepts the origin of the mouse x1, y1
-//and the origin of the square x2, y2
-//var field indicates the space that the enemy inhabits:
-//x-f, y-f   x+f,y-f|
-//                  |
-//      x,y         |
-//                  |
-//x-f, y+f   x+f,y-f|
-//This method returns true if x1,y1 is inside the 'field'
+    initwindow(X_RES, Y_RES, "Pawn Wars");
+    welcome_splashscreen(); //press any key to continue....
 
-    if(x1 > x2 - half_length && x1 < x2 + half_length){
-        if(y1 > y2 - half_length && y1 < y2 + half_length){
-            return true;
-        }
+    while(game());
+
+    while(!kbhit()){
+        delay(200);
     }
-
-    return false;
+    return 0;
 }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*function definition*/
+//void win_splashscreen(){
+//    int page = 1;
+//    while(!kbhit()){
+//        Pawn *p = new Pawn (getmaxx()/2, getmaxy()/2, 100, WHITE, 1);
+//        Pawn *arr[10];
+//        p->draw();
+//        settextstyle(6,0,30);
+//        outtextxy(getmaxx()/2 - 400, getmaxy()/2 - 25,"PAWN");
+//        outtextxy(getmaxx()/2 + 50, getmaxy()/2 - 25,"WARS");
+//        setactivepage(page);
+//        setvisualpage(1 - page);
+//        cleardevice();
+//        page = 1 - page;
+//    }
+//}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void welcome_splashscreen(){
+    int page = 1;
+    while(!kbhit()){
+        Pawn *p = new Pawn (getmaxx()/2, getmaxy()/2, 100, WHITE, 1);
+        Pawn *arr[10];
+        p->draw();
+        settextstyle(6,0,30);
+        outtextxy(getmaxx()/2 - 400, getmaxy()/2 - 25,"PAWN");
+        outtextxy(getmaxx()/2 + 50, getmaxy()/2 - 25,"WARS");
+        setactivepage(page);
+        setvisualpage(1 - page);
+        cleardevice();
+        page = 1 - page;
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool game(){
 
     static const int BOARD_SIZE = getmaxx()/40;
@@ -208,6 +245,8 @@ bool game(){
         }
         p1->draw();
         p2->draw();
+//            for(int x = 0; x < 8; x++){
+//                if(p1->p[clickedPawn] == )
 
         page = 1 - page;
         delay(24);
@@ -216,20 +255,24 @@ bool game(){
 
     return gameInstance;
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
+//This method accepts the origin of the mouse x1, y1
+//and the origin of the square x2, y2
+//var field indicates the space that the enemy inhabits:
+//x-f, y-f   x+f,y-f|
+//                  |
+//      x,y         |
+//                  |
+//x-f, y+f   x+f,y-f|
+//This method returns true if x1,y1 is inside the 'field'
 
-int main(){
-
-    //if you're running on a smaller resolution monitor,
-    //change to 1366 x 768
-    static const int X_RES = 1366;
-    static const int Y_RES = 768;
-
-    initwindow(X_RES, Y_RES, "Pawn Wars");
-
-    while(game());
-
-    while(!kbhit()){
-        delay(200);
+    if(x1 > x2 - half_length && x1 < x2 + half_length){
+        if(y1 > y2 - half_length && y1 < y2 + half_length){
+            return true;
+        }
     }
-    return 0;
+
+    return false;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
