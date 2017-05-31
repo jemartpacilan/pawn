@@ -6,9 +6,11 @@
 #include "Board.h"
 #include "ClockHud.h"
 #include "SplashScreen.h"
-
+#include <String.h>
 using namespace std;
 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 //This method accepts the origin of the mouse x1, y1
 //and the origin of the square x2, y2
@@ -28,6 +30,7 @@ bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 
     return false;
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool game(){
 
@@ -68,7 +71,7 @@ bool game(){
 
         setcolor(COLOR(100,100,100));
         setfillstyle(SOLID_FILL, COLOR(100,100,100));
-        floodfill(1,1, COLOR(100,100,100))
+        floodfill(1,1, COLOR(100,100,100));
 
         b->draw();
         if(p1->isMoving()){
@@ -213,6 +216,8 @@ bool game(){
         }
         p1->draw();
         p2->draw();
+//            for(int x = 0; x < 8; x++){
+//                if(p1->p[clickedPawn] == )
 
         page = 1 - page;
         delay(24);
@@ -248,14 +253,14 @@ bool game(){
 
 }
 
+
 int main(){
 
-    //if you're running on a smaller resolution monitor,
-    //change to 1366 x 768
     static const int X_RES = 1366;
     static const int Y_RES = 768;
 
     initwindow(X_RES, Y_RES, "Pawn Wars");
+
 
     while(game());
 
