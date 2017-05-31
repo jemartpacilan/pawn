@@ -1,11 +1,13 @@
 #include <graphics.h>
 #include <iostream>
+#include <time.h>
 #include "Pawn.h"
 #include "Player.h"
 #include "Board.h"
+#include "ClockHud.h"
+#include "SplashScreen.h"
 
 using namespace std;
-
 
 bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 //This method accepts the origin of the mouse x1, y1
@@ -29,6 +31,8 @@ bool checkCollision(int x1, int y1, int x2, int y2, int half_length){
 
 bool game(){
 
+    SplashScreen *ss = new SplashScreen();
+    ss->welcome_splashscreen();
     static const int BOARD_SIZE = getmaxx()/40;
 
     Board *b = new Board(BOARD_SIZE);
@@ -39,6 +43,9 @@ bool game(){
     b->init();
     b->draw();
 
+    ClockHud *ch = new ClockHud();
+
+
     int x, y;
 
     bool clicking = false;
@@ -46,6 +53,7 @@ bool game(){
     p1->init(b->square[0][6]->getX(), b->square[0][6]->getY(), BOARD_SIZE);
     p2->init(b->square[0][1]->getX(), b->square[0][1]->getY(), BOARD_SIZE);
 
+    p2->stop();
     p1->move();
 
     int page = 0;
@@ -58,10 +66,12 @@ bool game(){
         setvisualpage(1 - page);
         cleardevice();
 
+        setcolor(COLOR(100,100,100));
+        setfillstyle(SOLID_FILL, COLOR(100,100,100));
+        floodfill(1,1, COLOR(100,100,100))
+
         b->draw();
-
         if(p1->isMoving()){
-
             int clickedPawn;
 
             if(!clicking){
@@ -114,8 +124,7 @@ bool game(){
                                     b->print();
 
                                     if(y == 0){
-                                        gameInstance = false;
-                                        return gameInstance;
+                                        return ss->gameOver(1);
                                     }
 
                                     b->resetToggle();
@@ -123,8 +132,6 @@ bool game(){
                                     p1->stop();
                                     p2->move();
                                 }
-
-
                             }
                         }
                     }
@@ -137,6 +144,8 @@ bool game(){
 
         }
         else if(p2->isMoving()){
+
+
             int clickedPawn;
 
             if(!clicking){
@@ -175,10 +184,8 @@ bool game(){
                                         clicking = false;
 
                                         if(b->stat_table[x][y] > 0 ){
-                                            cout<<"here"<<endl;
                                             p1->p[(b->stat_table[x][y]) - 1]->translate(100 + (b->stat_table[x][y]) * 30, b->getFirstPosY());
                                             p1->p[(b->stat_table[x][y]) - 1]->Die();
-                                            cout<<"posY:"<<b->getFirstPosY();
                                         }
 
 
@@ -187,9 +194,7 @@ bool game(){
                                         b->print();
 
                                         if(y == 7){
-
-                                            gameInstance = false;
-                                            return gameInstance;
+                                            return ss->gameOver(2);
                                         }
 
                                         b->resetToggle();
@@ -212,9 +217,35 @@ bool game(){
         page = 1 - page;
         delay(24);
 
+        unsigned long t_p1 = p1->t->currentTime();
+        unsigned long t_p2 = p2->t->currentTime();
+
+
+
+
+        if(!p1->t->idle())
+            ch->draw(t_p1, b->getFirstPosX() * 2.5, b->getFirstPosY() * 4);
+        else
+            ch->draw(p1->t->frozeTime(), b->getFirstPosX() * 2.5, b->getFirstPosY()  * 4);
+
+
+        if(!p2->t->idle())
+            ch->draw(t_p2, b->getFirstPosX() * 2.5, b->getFirstPosY());
+        else
+            ch->draw(p2->t->frozeTime(), b->getFirstPosX() * 2.5, b->getFirstPosY());
+
+        if(t_p1 == 0){
+            return ss->gameOver(2);
+        }
+        if(t_p2 == 0){
+            return ss->gameOver(1);
+        }
+
+
     }
 
     return gameInstance;
+
 }
 
 int main(){

@@ -1,13 +1,65 @@
+#include <time.h>
+
+class Timer{
+    private:
+        unsigned long begTime;
+        int elapsedTime;
+        int remTime;
+        int freezeTime;
+        bool isPaused;
+    public:
+
+        Timer(){
+            begTime = clock();
+            freezeTime = 0;
+            elapsedTime = 0;
+            freezeTime = 0;
+            isPaused = true;
+        }
+
+        unsigned long currentTime(){
+            remTime = (180 - ((clock() - begTime)/1000)) + elapsedTime;
+            return remTime;
+
+        }
+
+        unsigned long frozeTime(){
+            return freezeTime;
+        }
+
+        void pause(){
+            isPaused = true;
+            freezeTime = (180 - ((clock() - begTime)/1000));
+        }
+
+        void resume(){
+            isPaused = false;
+            elapsedTime = freezeTime - remTime;
+        }
+
+        bool idle(){
+            return isPaused;
+        }
+
+        bool isTimeout(unsigned long seconds) {
+			return seconds >= currentTime();
+		}
+
+
+
+};
 
 class Player{
     private:
 
     public:
         bool isActive;
+        Timer *t;
+
         Player(){
 
             isActive = false;
-
+            t = new Timer();
         };
 
         Pawn *p[8];
@@ -19,10 +71,12 @@ class Player{
         }
 
         void move(){
+            t->resume();
             isActive = true;
         }
 
         void stop(){
+            t->pause();
             isActive = false;
         }
 
