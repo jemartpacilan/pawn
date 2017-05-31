@@ -70,6 +70,7 @@ class Board{
     private:
         int x, y;
         int square_length;
+        int first_x, first_y;
 
     public:
         Square *square[8][8];
@@ -84,9 +85,14 @@ class Board{
         void init(){
             int counterX = 0;
             int counterY = 0;
-
+            bool first = true;
             for(int y = 0, posY = 2; y < 8; y++, posY++){
                 for(int x = 0, posX = 6; x < 8; x++, posX++){
+                    if(first){
+                        first_x = posX * (square_length*2);
+                        first_y = posY * (square_length*2);
+                        first = false;
+                    }
                     if(counterX%2 == 0)
                         square[x][y] = new Square(posX * (square_length*2), posY * (square_length*2), square_length, COLOR(222,184,135));
                     else if(counterX%2 == 1)
@@ -105,6 +111,14 @@ class Board{
             initPawn();
 
 
+        }
+
+        int getFirstPosX(){
+            return first_x;
+        }
+
+        int getFirstPosY(){
+            return first_y;
         }
 
         void print(){
